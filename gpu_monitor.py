@@ -5,6 +5,8 @@ import sys
 import time
 import argparse
 import numpy as np
+from reprint import output
+
 
 cmd = 'python /path/to/script.py'
 
@@ -33,9 +35,9 @@ def gpu_info(args):
     memory_free = list(map(int, os.popen('nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits')
                            .read().strip().split('\n')))
     power = list(map(float, os.popen('nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits')
-                           .read().strip().split('\n')))
+                     .read().strip().split('\n')))
     power_limit = list(map(float, os.popen('nvidia-smi --query-gpu=power.limit --format=csv,noheader,nounits')
-                               .read().strip().split('\n')))
+                           .read().strip().split('\n')))
     num_gpus = len(memory_total)
     assert num_gpus >= args.num_gpus, f'{num_gpus} GPU(s) detected, however {args.num_gpus} GPU(s) needed.'
 
@@ -49,23 +51,26 @@ def gpu_info(args):
     id = np.nonzero(np.array(memory_free) >= args.memory)[0]  # the id list of GPU(s) that are ready for the task.
     ready = id.size >= args.num_gpus
 
-    return ready, id, zip(range(num_gpus), power, power_limit, memory_used, memory_total)
+    return ready, id, list(zip(range(num_gpus), power, power_limit, memory_used, memory_total))
 
 
 def main(args):
     ready, id, info = gpu_info(args)
+    gpu_info_format = '|{:^7d}|   {:>3.0f}W / {:>3.0f}W   | {:>5d}MiB / {:>5d}MiB |\r\n'
     i = 0
-    while not ready:  # set waiting condition
-        ready, id, info = gpu_info(args)
-        i = i % 5
-        sys.stdout.write('\r|  GPU  |  Pwr:Usage/Cap  |     Memory-Usage    |\r\n')
-        gpu_info_format = '|{:^7d}|   {:>3.0f}W / {:>3.0f}W   | {:>5d}MiB / {:>5d}MiB |\r\n'
-        gpu_info_print = ''.join([gpu_info_format.format(*data) for data in info])
-        symbol = 'monitoring' + '.' * i
-        sys.stdout.write(gpu_info_print + symbol)
-        sys.stdout.flush()
-        time.sleep(args.interval)
-        i += 1
+    with output(output_type='list', initial_len=len(info) + 2, interval=0) as gpu_info_print:
+        while not ready:  # set waiting condition
+            ready, id, info = gpu_info(args)
+            i = i % 5
+            gpu_info_print[0] = '|  GPU  |  Pwr:Usage/Cap  |     Memory-Usage    |\r\n'
+            for j, info_j in enumerate(info, start=1):
+                gpu_info_print[j] = gpu_info_format.format(*info_j)
+            gpu_info_print[-1] = 'monitoring' + '.' * (i + 1)
+            # sys.stdout.write(gpu_info_print + symbol)
+            # sys.stdout.flush()
+            time.sleep(args.interval)
+            i += 1
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(list(map(str, id[:args.num_gpus])))
     print('\n' + cmd)
     os.system(cmd)
 
