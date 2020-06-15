@@ -23,6 +23,9 @@ def parse_args():
     parser.add_argument(
         '-inv', '--interval', type=int, default=2,
         help='Interval time (s) between queries of GPU status.')
+    parser.add_argument(
+        '--dir', type=str, required=True,
+        help='Specify working directory for the command.')
 
     return parser.parse_args()
 
@@ -55,6 +58,7 @@ def gpu_info(args):
 
 
 def main(args):
+    assert os.path.exists(args.dir), f'The specified working directory {args.dir} does not exist.'
     ready, id, info = gpu_info(args)
     gpu_info_format = '|{:^7d}|   {:>3.0f}W / {:>3.0f}W   | {:>5d}MiB / {:>5d}MiB |\r\n'
     i = 0
@@ -71,6 +75,7 @@ def main(args):
             time.sleep(args.interval)
             i += 1
     os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(list(map(str, id[:args.num_gpus])))
+    os.chdir(args.dir)  # change working directory
     print('\n' + cmd)
     os.system(cmd)
 
