@@ -1,11 +1,11 @@
 # author: zeyang
 
 import os
-import sys
 import time
 import argparse
 import numpy as np
 from reprint import output
+from message import send_mail
 
 
 cmd = 'python /path/to/script.py'
@@ -26,7 +26,9 @@ def parse_args():
     parser.add_argument(
         '--dir', type=str, required=True,
         help='Specify working directory for the command.')
-
+    parser.add_argument(
+        '--msg', action='store_true',
+        help='Whether to send email message to report the status of task.')
     return parser.parse_args()
 
 
@@ -70,14 +72,15 @@ def main(args):
             for j, info_j in enumerate(info, start=1):
                 gpu_info_print[j] = gpu_info_format.format(*info_j)
             gpu_info_print[-1] = 'monitoring' + '.' * (i + 1)
-            # sys.stdout.write(gpu_info_print + symbol)
-            # sys.stdout.flush()
             time.sleep(args.interval)
             i += 1
+    start = time.time()
+    send_mail(cmd)  # send notification via email to the user
     os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(list(map(str, id[:args.num_gpus])))
-    os.chdir(args.dir)  # change working directory
+    os.chdir(os.path.expanduser(args.dir))  # change working directory
     print('\n' + cmd)
     os.system(cmd)
+    send_mail(cmd, finish=True, time_used=time.time() - start)
 
 
 if __name__ == '__main__':
