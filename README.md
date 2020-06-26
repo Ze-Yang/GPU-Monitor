@@ -1,5 +1,7 @@
 # GPU Resource Monitor
 
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Ze-Yang/GPU-Monitor.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Ze-Yang/GPU-Monitor/context:python)
+
 This project aims at helping AI researchers put their GPU computational resource into full play.
 It is common that a GPU server will be idle when on-going tasks finished, until noticed by its users.
 Undoubtedly, it is troublesome for one to manually monitor the tasks on a server. To address this problem, 
