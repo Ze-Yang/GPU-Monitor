@@ -4,6 +4,7 @@ import os
 import time
 import argparse
 import numpy as np
+import socket
 from reprint import output
 from message import send_mail
 
@@ -79,8 +80,18 @@ def main(args):
     os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(list(map(str, id[:args.num_gpus])))
     os.chdir(os.path.expanduser(args.dir))  # change working directory
     print('\n' + cmd)
-    os.system(cmd)
-    send_mail(cmd, finish=True, time_used=time.time() - start)
+    try:
+        if os.system(cmd) != 0:
+            raise Exception('Error encountered.')
+    except Exception:
+        sub = 'Error Encountered'
+        content = 'Hi,\n\nWe regret to inform you that your program encountered some errors ' \
+                  'during running, please check with it, Thanks.' \
+                  '\n\nThis is a system generated email, do not reply.\n\n' \
+                  'Nice day,\n' + socket.gethostname()
+        send_mail(cmd, subject=sub, content=content)
+    else:
+        send_mail(cmd, finish=True, time_used=time.time() - start)
 
 
 if __name__ == '__main__':
