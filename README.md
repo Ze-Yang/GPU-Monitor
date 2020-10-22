@@ -7,10 +7,11 @@ It is common that a GPU server will be idle when on-going tasks finished, until 
 Undoubtedly, it is troublesome for one to manually monitor the tasks on a server. To address this problem, 
 we make task succession completely automatic by resource monitoring. Specifically, it can 
 monitor the GPU resource iteratively and seamlessly start the pending task once GPU resource meet its 
-requirement.
+requirement. You will receive email notification upon task starting and finished. Additionally, if
+your program encounters errors during running, you will get informed to fix it in time.
 
 ## Package Requirement
-- python
+- python >= 3.6
 - reprint
 
 ## Usage
