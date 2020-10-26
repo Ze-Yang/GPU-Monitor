@@ -62,6 +62,7 @@ def gpu_info(args):
 
 def main(args):
     assert os.path.exists(args.dir), f'The specified working directory {args.dir} does not exist.'
+    assert cmd != 'python /path/to/script.py', 'Please specify the command to run in gpu_monitor.py'
     ready, id, info = gpu_info(args)
     gpu_info_format = '|{:^7d}|   {:>3.0f}W / {:>3.0f}W   | {:>5d}MiB / {:>5d}MiB |\r\n'
     i = 0
