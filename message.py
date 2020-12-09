@@ -6,14 +6,26 @@ import socket
 import time
 from email.mime.text import MIMEText
 
-# third-party SMTP service
-mail_host = "smtp.xxx.com"  # set SMTP server
-mail_user = "xxx@xxx.com"  # sender username
-mail_pass = "xxx"  # password
-receivers = ['xxx@xxx.com']  # receivers
+def read_config():
+    config_path = 'config.txt'
+    try:
+        with open(config_path, 'r') as f:
+            mail_host = f.readline().replace('\n','')
+            mail_user = f.readline().replace('\n','')
+            mail_pass = f.readline().replace('\n','')
+            receivers = []
+            receiver = f.readline().replace('\n','')
+            while receiver:
+                receivers.append(receiver)
+                receiver = f.readline().replace('\n','')
+        return mail_host, mail_user, mail_pass, receivers
+    except Exception:
+        print("Do not read the config file, please check your config file.")
+        raise
 
 
 def send_mail(cmd, finish=False, time_used=None, subject=None, content=None):
+    mail_host, mail_user, mail_pass, receivers = read_config()
     sender = "GPU monitor" + "<" + mail_user + ">"
 
     if subject is None:

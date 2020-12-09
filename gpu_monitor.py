@@ -9,9 +9,6 @@ from reprint import output
 from message import send_mail
 
 
-cmd = 'python /path/to/script.py'
-
-
 def parse_args():
     """Parse input arguments"""
     parser = argparse.ArgumentParser(description='GPU resource monitoring.')
@@ -30,6 +27,8 @@ def parse_args():
     parser.add_argument(
         '--msg', action='store_true',
         help='Whether to send email message to report the status of task.')
+    parser.add_argument('--cmd', default = 'python /path/to/script.py',
+        help='the cmd to run')
     return parser.parse_args()
 
 
@@ -61,6 +60,7 @@ def gpu_info(args):
 
 
 def main(args):
+    cmd = args.cmd
     assert os.path.exists(args.dir), f'The specified working directory {args.dir} does not exist.'
     assert cmd != 'python /path/to/script.py', 'Please specify the command to run in gpu_monitor.py'
     ready, id, info = gpu_info(args)
