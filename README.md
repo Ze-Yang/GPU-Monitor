@@ -15,16 +15,20 @@ your program encounters errors during running, you will get informed to fix it i
 - reprint
 
 ## Usage
-`python gpu_monitor.py -m 12000 -n-gpus 8 --dir path/to/project --msg`
+You should run the following command to verify the setting of the email and initialize your config file.
+`python config.py -host "smtp.163.com" -user "YourEmail@163.com -pass "AuthorizationCode" --receivers "Receiver1@xxx.com" "Receiver2@xxx.com"`
+And then you can use the following cmd to monitor gpu.
+`python gpu_monitor.py -m 12000 -n-gpus 8 --dir path/to/project --msg --cmd "python xxx.py"`
 
 Args:
 - `-m`: Estimated GPU memory you need (MB per GPU)
 - `-n-gpus`: Number of GPU(s) you need
 - `--dir`: Specify the working directory under which your task will run
 - `--msg`: Notify the user via email when the task starts and finishes.
+- `--cmd`: The cmd to run.
 
 Note: 
-- Remember to set the variable `cmd` in `gpu_monitor.py` with the your own command.
+- Remember to use "" to constrain your cmd, i.e. `--cmd "python xxx.py"`.
 - To use `--msg`, please first setup the sender and receiver information in `message.py`.
 
 ## License
