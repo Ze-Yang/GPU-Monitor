@@ -10,6 +10,10 @@ monitor the GPU resource iteratively and seamlessly start the pending task once 
 requirement. You will receive email notification upon task starting and finished. Additionally, if
 your program encounters errors during running, you will get informed to fix it in time.
 
+## New features:
+- support occupying gpus one by one and once reach the specified number, your task will be executed automatically. 
+(30/07/2021)
+
 ## Package Requirement
 - python >= 3.6
 - reprint
@@ -22,10 +26,13 @@ Args:
 - `-n-gpus`: Number of GPU(s) you need
 - `--dir`: Specify the working directory under which your task will run
 - `--msg`: Notify the user via email when the task starts and finishes.
+- `--sleep`: Run a infinite loop programme to temporarily claim the specified number of GPUs.
 
 Note: 
 - Remember to set the variable `cmd` in `gpu_monitor.py` with the your own command.
 - To use `--msg`, please first setup the sender and receiver information in `message.py`.
+- Running with `--sleep` will claim the specified number of GPUs temporarily until your actual task is ready.
+In this mode, you are not required to specify `--dir`.
 
 ## License
 This project is released under the [MIT License](LICENSE).
